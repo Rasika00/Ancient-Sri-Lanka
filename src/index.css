@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=MedievalSharp&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 10% 8%;
+    --foreground: 40 30% 85%;
+
+    --card: 30 12% 12%;
+    --card-foreground: 40 30% 85%;
+
+    --popover: 30 12% 10%;
+    --popover-foreground: 40 30% 85%;
+
+    --primary: 40 70% 45%;
+    --primary-foreground: 30 10% 8%;
+
+    --secondary: 30 15% 18%;
+    --secondary-foreground: 40 30% 85%;
+
+    --muted: 30 10% 15%;
+    --muted-foreground: 30 15% 50%;
+
+    --accent: 35 80% 50%;
+    --accent-foreground: 30 10% 8%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 35 20% 20%;
+    --input: 35 20% 20%;
+    --ring: 40 70% 45%;
+
+    --radius: 0.25rem;
+
+    --gold: 40 70% 45%;
+    --gold-light: 42 80% 60%;
+    --gold-dark: 38 65% 30%;
+    --amber-glow: 35 90% 55%;
+    --stone: 30 12% 25%;
+    --stone-dark: 30 10% 12%;
+    --stone-light: 30 15% 35%;
+    --ancient-red: 5 60% 35%;
+    --temple-green: 150 30% 25%;
+
+    --font-display: 'Cinzel', serif;
+    --font-body: 'Cormorant Garamond', serif;
+    --font-accent: 'MedievalSharp', cursive;
+
+    --gradient-gold: linear-gradient(135deg, hsl(38, 65%, 30%), hsl(40, 70%, 45%), hsl(42, 80%, 60%), hsl(40, 70%, 45%), hsl(38, 65%, 30%));
+    --gradient-dark: linear-gradient(180deg, hsl(30, 10%, 5%), hsl(30, 10%, 12%));
+    --gradient-card: linear-gradient(145deg, hsl(30, 12%, 14%), hsl(30, 10%, 10%));
+    --shadow-gold: 0 0 30px hsl(40, 70%, 45%, 0.3);
+    --shadow-glow: 0 0 60px hsl(35, 90%, 55%, 0.2);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .font-accent {
+    font-family: var(--font-accent);
+  }
+  .text-gold-gradient {
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .border-gold-gradient {
+    border-image: var(--gradient-gold) 1;
+  }
+  .bg-gold-gradient {
+    background: var(--gradient-gold);
+  }
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+/* Ancient decorative scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(30, 10%, 8%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(40, 70%, 45%, 0.4);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(40, 70%, 45%, 0.6);
+}
+
+/* Loading animation keyframes */
+@keyframes symbolRotate {
+  0% { transform: rotate(0deg); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: rotate(360deg); opacity: 0; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes glowPulse {
+  0%, 100% { filter: drop-shadow(0 0 10px hsl(40, 70%, 45%, 0.3)); }
+  50% { filter: drop-shadow(0 0 25px hsl(35, 90%, 55%, 0.6)); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
