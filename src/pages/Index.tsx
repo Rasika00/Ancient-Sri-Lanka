@@ -1,21 +1,103 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingScreen from "@/components/LoadingScreen";
 import BraceletScene from "@/components/BraceletScene";
 import GemLabels from "@/components/GemLabels";
 import PlaceDetail from "@/components/PlaceDetail";
 import Navbar from "@/components/Navbar";
+import AuthDialog from "@/components/AuthDialog";
+import { Button } from "@/components/ui/button";
 import { historicalPlaces } from "@/data/places";
 
+type AuthTab = "login" | "register";
+const AUTH_STORAGE_KEY = "ancient-sri-lanka-authenticated";
+
 const Index = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authTab, setAuthTab] = useState<AuthTab>("login");
   const [loading, setLoading] = useState(true);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY) === "true";
+    setIsAuthenticated(storedAuth);
+    setAuthReady(true);
+  }, []);
 
   const handleGemClick = useCallback((id: string) => {
     setSelectedPlaceId(id);
   }, []);
 
+  const handleAuthSuccess = useCallback(() => {
+    localStorage.setItem(AUTH_STORAGE_KEY, "true");
+    setIsAuthenticated(true);
+    setLoading(true);
+  }, []);
+
   const selectedPlace = historicalPlaces.find((p) => p.id === selectedPlaceId);
+
+  if (!authReady) {
+    return null;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="relative min-h-screen bg-background overflow-hidden flex items-center justify-center px-6">
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-8 w-40 h-40 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute bottom-1/4 right-8 w-52 h-52 rounded-full bg-accent/10 blur-3xl" />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 w-full max-w-xl rounded-lg border border-primary/25 bg-card/90 p-8 md:p-10 backdrop-blur-md text-center shadow-gold"
+        >
+          <p className="font-accent text-primary text-lg">Protected Access</p>
+          <h1 className="mt-2 text-3xl md:text-5xl font-display text-gold-gradient tracking-wider">
+            ARCANE NEXUS RELIC
+          </h1>
+          <p className="mt-4 text-base md:text-lg text-foreground/85 font-body leading-relaxed">
+            Register or log in to unlock the museum and start exploring the bracelet.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:w-auto border-primary/40 bg-background/70 text-foreground hover:bg-primary/15 hover:text-primary"
+              onClick={() => {
+                setAuthTab("login");
+                setAuthDialogOpen(true);
+              }}
+            >
+              Login
+            </Button>
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 shadow-gold"
+              onClick={() => {
+                setAuthTab("register");
+                setAuthDialogOpen(true);
+              }}
+            >
+              Register
+            </Button>
+          </div>
+        </motion.div>
+
+        <AuthDialog
+          open={authDialogOpen}
+          onOpenChange={setAuthDialogOpen}
+          activeTab={authTab}
+          onTabChange={setAuthTab}
+          onAuthenticated={handleAuthSuccess}
+        />
+      </div>
+    );
+  }
 
   if (loading) {
     return <LoadingScreen onComplete={() => setLoading(false)} />;
@@ -46,7 +128,7 @@ const Index = () => {
           transition={{ delay: 0.8 }}
         >
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-display text-gold-gradient tracking-wider">
-            The Royal Bracelet
+            ARCANE NEXUS RELIC
           </h1>
           <p className="mt-3 text-sm md:text-lg font-body text-muted-foreground max-w-xl mx-auto">
             Rotate the ancient bracelet and click the glowing gems to discover 

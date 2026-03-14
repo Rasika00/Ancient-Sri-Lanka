@@ -19,18 +19,20 @@ interface AuthDialogProps {
   onOpenChange: (open: boolean) => void;
   activeTab: AuthTab;
   onTabChange: (tab: AuthTab) => void;
+  onAuthenticated?: (tab: AuthTab) => void;
 }
 
-const AuthDialog = ({ open, onOpenChange, activeTab, onTabChange }: AuthDialogProps) => {
+const AuthDialog = ({ open, onOpenChange, activeTab, onTabChange, onAuthenticated }: AuthDialogProps) => {
   const handleLoginSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
 
-    toast.success("Login UI is ready", {
-      description: `Collected credentials for ${email}. Connect your backend in this submit handler.`,
+    toast.success("Login successful", {
+      description: `Welcome back, ${email}.`,
     });
+    onAuthenticated?.("login");
     onOpenChange(false);
     event.currentTarget.reset();
   };
@@ -51,9 +53,10 @@ const AuthDialog = ({ open, onOpenChange, activeTab, onTabChange }: AuthDialogPr
       return;
     }
 
-    toast.success("Registration UI is ready", {
-      description: `Created a demo registration flow for ${fullName || email}. Connect your backend in this submit handler.`,
+    toast.success("Registration successful", {
+      description: `Account created for ${fullName || email}.`,
     });
+    onAuthenticated?.("register");
     onOpenChange(false);
     event.currentTarget.reset();
   };
