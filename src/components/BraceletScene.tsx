@@ -4,6 +4,8 @@ import { Suspense, useRef, useState, useCallback, useMemo } from "react";
 import * as THREE from "three";
 import { historicalPlaces } from "@/data/places";
 
+const modelPath = `${import.meta.env.BASE_URL}models/bracelet.glb`;
+
 interface GemHotspotProps {
   position: [number, number, number];
   color: string;
@@ -66,7 +68,7 @@ const GemHotspot = ({ position, color, onClick, isHovered, onHover }: GemHotspot
 };
 
 const BraceletModel = ({ onGemClick }: { onGemClick: (id: string) => void }) => {
-  const { scene } = useGLTF("/models/bracelet.glb");
+  const { scene } = useGLTF(modelPath);
   const groupRef = useRef<THREE.Group>(null);
   const [hoveredGem, setHoveredGem] = useState<number | null>(null);
 
@@ -138,7 +140,7 @@ const BraceletModel = ({ onGemClick }: { onGemClick: (id: string) => void }) => 
   );
 };
 
-useGLTF.preload("/models/bracelet.glb");
+useGLTF.preload(modelPath);
 
 interface BraceletSceneProps {
   onGemClick: (id: string) => void;

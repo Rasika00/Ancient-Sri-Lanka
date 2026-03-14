@@ -6,9 +6,11 @@ import { HistoricalPlace } from "@/data/places";
 // Image imports
 import sigiriyaImg from "@/assets/sigiriya.jpg";
 
+const publicAsset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
 const placeImages: Partial<Record<string, string[]>> = {
-  sigiriya: [sigiriyaImg, "/place-images/sigiriya-2.png"],
-  pahiyangala: ["/place-images/pahiyangala-2.png", "/place-images/pahiyangala-1.png"],
+  sigiriya: [sigiriyaImg, publicAsset("place-images/sigiriya-2.png")],
+  pahiyangala: [publicAsset("place-images/pahiyangala-2.png"), publicAsset("place-images/pahiyangala-1.png")],
 };
 
 const GalleryImage = ({ src, alt }: { src: string; alt: string }) => {
