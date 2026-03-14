@@ -11,6 +11,13 @@ import { historicalPlaces } from "@/data/places";
 
 type AuthTab = "login" | "register";
 const AUTH_STORAGE_KEY = "ancient-sri-lanka-authenticated";
+const REGISTERED_USER_KEY = "ancient-sri-lanka-registered-user";
+
+interface RegisteredUser {
+  fullName: string;
+  email: string;
+  password: string;
+}
 
 const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,7 +29,8 @@ const Index = () => {
 
   useEffect(() => {
     const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY) === "true";
-    setIsAuthenticated(storedAuth);
+    const hasRegisteredUser = !!localStorage.getItem(REGISTERED_USER_KEY);
+    setIsAuthenticated(storedAuth && hasRegisteredUser);
     setAuthReady(true);
   }, []);
 
@@ -34,6 +42,48 @@ const Index = () => {
     localStorage.setItem(AUTH_STORAGE_KEY, "true");
     setIsAuthenticated(true);
     setLoading(true);
+  }, []);
+
+  const handleRegister = useCallback(
+    ({ fullName, email, password }: { fullName: string; email: string; password: string }) => {
+      if (!fullName || !email || !password) {
+        return { ok: false, message: "Please complete all fields." };
+      }
+
+      const registeredUser: RegisteredUser = {
+        fullName,
+        email: email.toLowerCase(),
+        password,
+      };
+
+      localStorage.setItem(REGISTERED_USER_KEY, JSON.stringify(registeredUser));
+      return { ok: true, message: `Account created for ${fullName}.` };
+    },
+    []
+  );
+
+  const handleLogin = useCallback(({ email, password }: { email: string; password: string }) => {
+    const storedUserRaw = localStorage.getItem(REGISTERED_USER_KEY);
+
+    if (!storedUserRaw) {
+      return { ok: false, message: "No account found. Please register first." };
+    }
+
+    let storedUser: RegisteredUser;
+    try {
+      storedUser = JSON.parse(storedUserRaw) as RegisteredUser;
+    } catch {
+      return { ok: false, message: "Saved account data is invalid. Please register again." };
+    }
+
+    const isEmailMatch = storedUser.email === email.toLowerCase();
+    const isPasswordMatch = storedUser.password === password;
+
+    if (!isEmailMatch || !isPasswordMatch) {
+      return { ok: false, message: "Use the same email and password used during registration." };
+    }
+
+    return { ok: true, message: `Welcome back, ${storedUser.fullName || storedUser.email}.` };
   }, []);
 
   const selectedPlace = historicalPlaces.find((p) => p.id === selectedPlaceId);
@@ -60,7 +110,7 @@ const Index = () => {
             ARCANE NEXUS RELIC
           </h1>
           <p className="mt-4 text-base md:text-lg text-foreground/85 font-body leading-relaxed">
-            Register or log in to unlock the museum and start exploring the bracelet.
+            Register first, then log in with the same email and password to unlock the museum.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -94,6 +144,8 @@ const Index = () => {
           activeTab={authTab}
           onTabChange={setAuthTab}
           onAuthenticated={handleAuthSuccess}
+          onRegister={handleRegister}
+          onLogin={handleLogin}
         />
       </div>
     );

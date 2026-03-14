@@ -14,23 +14,61 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type AuthTab = "login" | "register";
 
+interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+interface RegisterPayload {
+  fullName: string;
+  email: string;
+  password: string;
+}
+
+interface AuthResult {
+  ok: boolean;
+  message: string;
+}
+
 interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activeTab: AuthTab;
   onTabChange: (tab: AuthTab) => void;
   onAuthenticated?: (tab: AuthTab) => void;
+  onLogin?: (payload: LoginPayload) => AuthResult;
+  onRegister?: (payload: RegisterPayload) => AuthResult;
 }
 
-const AuthDialog = ({ open, onOpenChange, activeTab, onTabChange, onAuthenticated }: AuthDialogProps) => {
+const AuthDialog = ({
+  open,
+  onOpenChange,
+  activeTab,
+  onTabChange,
+  onAuthenticated,
+  onLogin,
+  onRegister,
+}: AuthDialogProps) => {
   const handleLoginSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "");
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+
+    const result = onLogin
+      ? onLogin({ email, password })
+      : { ok: true, message: `Welcome back, ${email}.` };
+
+    if (!result.ok) {
+      toast.error("Login failed", {
+        description: result.message,
+      });
+      return;
+    }
 
     toast.success("Login successful", {
-      description: `Welcome back, ${email}.`,
+      description: result.message,
     });
     onAuthenticated?.("login");
     onOpenChange(false);
@@ -41,8 +79,8 @@ const AuthDialog = ({ open, onOpenChange, activeTab, onTabChange, onAuthenticate
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-    const fullName = String(formData.get("fullName") ?? "");
-    const email = String(formData.get("email") ?? "");
+    const fullName = String(formData.get("fullName") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
     const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
@@ -53,11 +91,21 @@ const AuthDialog = ({ open, onOpenChange, activeTab, onTabChange, onAuthenticate
       return;
     }
 
+    const result = onRegister
+      ? onRegister({ fullName, email, password })
+      : { ok: true, message: `Account created for ${fullName || email}.` };
+
+    if (!result.ok) {
+      toast.error("Registration failed", {
+        description: result.message,
+      });
+      return;
+    }
+
     toast.success("Registration successful", {
-      description: `Account created for ${fullName || email}.`,
+      description: `${result.message} Please log in to continue.`,
     });
-    onAuthenticated?.("register");
-    onOpenChange(false);
+    onTabChange("login");
     event.currentTarget.reset();
   };
 
