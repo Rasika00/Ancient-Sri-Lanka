@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { ArrowLeft, MapPin, Landmark, BookOpen, ImageIcon } from "lucide-react";
+import { ArrowLeft, MapPin, Landmark, BookOpen, ImageIcon, ExternalLink } from "lucide-react";
 import { HistoricalPlace } from "@/data/places";
 
 // Image imports
@@ -45,6 +45,10 @@ interface PlaceDetailProps {
 const PlaceDetail = ({ place, onBack }: PlaceDetailProps) => {
   const galleryImages = useMemo(() => placeImages[place.id] ?? [], [place.id]);
   const heroImage = galleryImages[0];
+  const mapLink = useMemo(() => {
+    const query = encodeURIComponent(`${place.name} Sri Lanka`);
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  }, [place.name]);
 
   return (
     <motion.div
@@ -188,19 +192,27 @@ const PlaceDetail = ({ place, onBack }: PlaceDetailProps) => {
             <MapPin className="h-6 w-6 text-primary" />
             <h2 className="text-2xl md:text-3xl font-display text-foreground">Location</h2>
           </div>
-          <div className="aspect-video rounded overflow-hidden border border-border">
-            <iframe
-              title={`Map of ${place.name}`}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=hotels+restaurants+hospitals+near+${place.name}+Sri+Lanka&center=${place.coordinates.lat},${place.coordinates.lng}&zoom=14`}
-            />
+          <div className="rounded border border-border bg-card/70 p-6 md:p-8">
+            <p className="text-base md:text-lg font-body text-foreground/90 leading-relaxed">
+              Open the location in Google Maps to view nearby hotels, restaurants, hospitals, and police stations.
+            </p>
+            <div className="mt-5 flex flex-wrap items-center gap-4">
+              <a
+                href={mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded border border-primary/40 bg-background/70 px-4 py-2 text-sm font-display text-foreground hover:border-primary hover:text-primary transition-colors"
+              >
+                Open in Google Maps
+                <ExternalLink className="h-4 w-4" />
+              </a>
+              <span className="font-body text-sm text-foreground/75">
+                {place.coordinates.lat.toFixed(4)}°N, {place.coordinates.lng.toFixed(4)}°E
+              </span>
+            </div>
           </div>
           <p className="mt-3 text-sm text-foreground/80 font-body text-center">
-            Click the map to explore nearby hotels, restaurants, hospitals, and police stations
+            External map links are safer for static hosting and avoid exposing secret API keys.
           </p>
         </motion.section>
 
