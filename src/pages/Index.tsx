@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingScreen from "@/components/LoadingScreen";
+import IntroVideoScreen from "@/components/IntroVideoScreen";
 import BraceletScene from "@/components/BraceletScene";
 import GemLabels from "@/components/GemLabels";
 import PlaceDetail from "@/components/PlaceDetail";
@@ -20,6 +21,7 @@ interface RegisteredUser {
 }
 
 const Index = () => {
+  const [introComplete, setIntroComplete] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authReady, setAuthReady] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
@@ -87,6 +89,10 @@ const Index = () => {
   }, []);
 
   const selectedPlace = historicalPlaces.find((p) => p.id === selectedPlaceId);
+
+  if (!introComplete) {
+    return <IntroVideoScreen onComplete={() => setIntroComplete(true)} />;
+  }
 
   if (!authReady) {
     return null;
